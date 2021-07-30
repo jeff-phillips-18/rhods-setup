@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Get the names of all of the machinesets
+machinesets=($(oc get machinesets -n openshift-machine-api -o name))
+
+# If we've got no labeled buildconfigs, return
+if [ "${#machinesets[@]}" -eq 0 ]; then
+    echo No Machinesets found ...
+    exit -1
+fi
+
+for name in "${machinesets[@]}"
+do
+    # Trim to just the name of the machineset (everything after /)
+    name="${name##*/}"
+
+    echo Scaling up "${name}"
+    oc scale --replicas=2 machineset "${name}" -n openshift-machine-api
+done
+
