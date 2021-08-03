@@ -33,3 +33,53 @@ git clone https://gitlab.cee.redhat.com/croberts/olminstall.git
 - Launch the RHODS Dashboard from the `odh-dashboard` node
 ####
 - Launch the Spawner UI from the `jupyterhub` node
+
+## Installing your development branch of RHODS Dashboard
+* Copy `.env` to `.env.local`  
+####
+* Edit `.env.local`
+  
+        OC_URL=<your cluster api url>
+        OC_USER=<admin user>
+        OC_PASSWORD=<admin password>
+        OC_PROJECT=redhat-ods-applications
+        IMAGE_REPOSITORY=quay.io/<quay user>/odh-dashboard:<branch>
+        SOURCE_REPOSITORY_URL=https://github.com/<repo>/odh-dashboard.git
+        SOURCE_REPOSITORY_REF=<branch>
+####
+* Remove the `odh-dashboard` kustomizeConfig from the `opendatahub` `KfDef`
+  - go to the developer perspective
+  - Select the ‘redhat-ods-applications’ project
+  - Search -> KfDef
+  - Edit the yaml for `opendatahub` KfDef
+  - Remove the section:
+
+          - kustomizeConfig:
+              overlays:
+                - authentication
+              repoRef:
+                name: manifests
+                path: odh-dashboard
+            name: odh-dashboard
+####
+* Push your dashboard changes
+####
+* Run `make reinstall`
+
+## Installing your development branch of RHODS Spawner UI
+- Clone the `jsp-wrapper` repository
+
+        git clone https://github.com/jeff-phillips-18/jsp-wrapper.git
+- Create `.env.local`:
+
+        QUAY_REPO=<your quay repo username>
+        GIT_USER=<your git username>
+        NAMESPACE=redhat-ods-applications
+        OPERATOR_NAMESPACE=rhods-operator
+        OPERATOR_NAMESPACE=redhat-ods-operator
+        GIT_REF=<your branch>
+        REMOTE_CMD=docker
+
+- Push your changes to `jupyterhub-singleuser-profiles` to your branch
+###
+- From `jsp-wrapper`, run `make`
